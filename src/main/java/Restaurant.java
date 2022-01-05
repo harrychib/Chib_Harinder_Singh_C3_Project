@@ -8,6 +8,7 @@ public class Restaurant {
     private String location;
     public LocalTime openingTime;
     public LocalTime closingTime;
+   // private List<Item> menu = new ArrayList<Item>();
     private List<Item> menu = new ArrayList<Item>();
 
     public Restaurant(String name, String location, LocalTime openingTime, LocalTime closingTime) {
@@ -76,6 +77,23 @@ public class Restaurant {
 
     public String getName() {
         return name;
+    }
+    /**
+     * Added new feature to get the order cost of selected items.
+     * @param itemNames - name of selected menu item.
+     * @return - total order cost of select menu item.
+     */
+    public int getOrderCost(List<String> itemNames) {
+
+        int totalOrderCost = 0;
+
+        for(String itemName : itemNames) {
+            Item item = findItemByName(itemName);
+            if(item != null)
+                totalOrderCost += item.getPrice();
+        }
+
+        return totalOrderCost;
     }
 
 }

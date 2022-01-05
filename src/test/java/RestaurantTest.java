@@ -3,6 +3,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,14 +44,14 @@ class RestaurantTest {
 
         // Arrange
         Restaurant spyRestaurant = Mockito.spy(restaurant);
-        LocalTime validTime = LocalTime.parse("12:05:00");
+        LocalTime invalidTime = LocalTime.parse("23:00:00");
 
         // Act
-        Mockito.when(spyRestaurant.getCurrentTime()).thenReturn(validTime);
+        Mockito.when(spyRestaurant.getCurrentTime()).thenReturn(invalidTime);
         boolean isRestaurantOpen = spyRestaurant.isRestaurantOpen();
 
         // Assert
-        assertTrue(isRestaurantOpen);
+        assertFalse(isRestaurantOpen);
 
 
     }
@@ -60,38 +62,43 @@ class RestaurantTest {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>MENU<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     @Test
     public void adding_item_to_menu_should_increase_menu_size_by_1(){
-        LocalTime openingTime = LocalTime.parse("10:30:00");
-        LocalTime closingTime = LocalTime.parse("22:00:00");
-        restaurant =new Restaurant("Amelie's cafe","Chennai",openingTime,closingTime);
-        restaurant.addToMenu("Sweet corn soup",119);
-        restaurant.addToMenu("Vegetable lasagne", 269);
-
+        // Arrange
         int initialMenuSize = restaurant.getMenu().size();
-        restaurant.addToMenu("Sizzling brownie",319);
-        assertEquals(initialMenuSize+1,restaurant.getMenu().size());
+
+        // Act
+        restaurant.addToMenu("Sizzling brownie", 319);
+
+        // Assert
+        assertEquals(initialMenuSize + 1, restaurant.getMenu().size());
     }
     @Test
     public void removing_item_from_menu_should_decrease_menu_size_by_1() throws itemNotFoundException {
-        LocalTime openingTime = LocalTime.parse("10:30:00");
-        LocalTime closingTime = LocalTime.parse("22:00:00");
-        restaurant =new Restaurant("Amelie's cafe","Chennai",openingTime,closingTime);
-        restaurant.addToMenu("Sweet corn soup",119);
-        restaurant.addToMenu("Vegetable lasagne", 269);
-
+        // Arrange
         int initialMenuSize = restaurant.getMenu().size();
+
+        // Act
         restaurant.removeFromMenu("Vegetable lasagne");
-        assertEquals(initialMenuSize-1,restaurant.getMenu().size());
+
+        // Assert
+        assertEquals(initialMenuSize - 1, restaurant.getMenu().size());
     }
     @Test
     public void removing_item_that_does_not_exist_should_throw_exception() {
-        LocalTime openingTime = LocalTime.parse("10:30:00");
-        LocalTime closingTime = LocalTime.parse("22:00:00");
-        restaurant =new Restaurant("Amelie's cafe","Chennai",openingTime,closingTime);
-        restaurant.addToMenu("Sweet corn soup",119);
-        restaurant.addToMenu("Vegetable lasagne", 269);
+
 
         assertThrows(itemNotFoundException.class,
                 ()->restaurant.removeFromMenu("French fries"));
     }
     //<<<<<<<<<<<<<<<<<<<<<<<MENU>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    @Test
+    public void getting_order_cost_should_return_sum_of_selected_menu_items_price() {
+        // Arrange
+        List<String> selectedMenuItems = Arrays.asList("Sweet Corn Soup", "Sizzling Brownie");
+
+        // Act
+        int orderCost = restaurant.getOrderCost(selectedMenuItems);
+
+        // Assert
+        assertEquals(438, orderCost);
+    }
 }
